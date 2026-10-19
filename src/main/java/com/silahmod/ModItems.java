@@ -130,12 +130,13 @@ public final class ModItems {
 	}
 
 	/** Menudeki toplam esya sayisi. */
-	public static final int COUNT = 14;
+	public static final int COUNT = 17;
 
 	/**
 	 * Menu sirasi (Net.GiveWeaponPayload ve WeaponMenuScreen ile ayni):
 	 * 0 pistol, 1 glock 17, 2 m4a1-s, 3 m4a4, 4 ak-47, 5 ak-74m, 6 p90, 7 kriss vector,
-	 * 8 kask 1, 9 yelek 1, 10 kask 2, 11 yelek 2, 12 medkit, 13 bicak
+	 * 8 kask 1, 9 yelek 1, 10 kask 2, 11 yelek 2, 12 medkit, 13 bicak,
+	 * 14 siyah sedan, 15 zirhli skoda, 16 lamborghini
 	 */
 	public static Item byIndex(int index) {
 		return switch (index) {
@@ -153,6 +154,9 @@ public final class ModItems {
 			case 11 -> VEST_2;
 			case 12 -> MEDKIT;
 			case 13 -> KNIFE;
+			case 14 -> CAR_BLACK_SEDAN;
+			case 15 -> CAR_ARMORED_SKODA;
+			case 16 -> CAR_LAMBORGHINI;
 			default -> null;
 		};
 	}
@@ -170,7 +174,7 @@ public final class ModItems {
 					entries.accept(CAR_ARMORED_SKODA);
 					entries.accept(CAR_LAMBORGHINI);
 					entries.accept(KNIFE);
-					entries.accept(new ItemStack(MEDKIT, WeaponConfig.MEDKIT_MENU_GIVE));
+					entries.accept(MEDKIT); // creative sekmesinde stack boyutu 1 olmak zorunda
 					entries.accept(HELMET_1);
 					entries.accept(VEST_1);
 					entries.accept(createHelmet2(context.holders()));

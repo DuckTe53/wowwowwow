@@ -33,5 +33,6 @@
   "item.silahmod.car_black_sedan": "Siyah Sedan",
   "item.silahmod.car_armored_skoda": "Zırhlı Skoda",
   "item.silahmod.car_lamborghini": "Lamborghini",
-  "message.silahmod.car_no_driver": "Bu arabayı sürmek için sağ tık yap"
+  "message.silahmod.car_no_driver": "Bu arabayı sürmek için sağ tık yap",
+  "gui.silahmod.cars": "Araçlar"
 }

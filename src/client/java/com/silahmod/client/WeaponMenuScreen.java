@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * B tusuyla acilan menu. Iki sutun silahlar, ucuncu sutun zirhlar ve medkit.
+ * B tusuyla acilan menu. Iki sutun silahlar, ucuncu sutun zirhlar ve medkit, dorduncu sutun arabalar.
  * Bir esyaya tiklayinca sunucu onu envantere verir.
  *
  * NOT: Arka plani (renderBackground) elle CAGIRMA. Screen.render() zaten cizer; ikinci kez cizmek
@@ -24,13 +24,15 @@ public class WeaponMenuScreen extends Screen {
 			"item.silahmod.pistol", "item.silahmod.glock_17", "item.silahmod.m4a1_s", "item.silahmod.m4a4",
 			"item.silahmod.ak_47", "item.silahmod.ak_74m", "item.silahmod.p90", "item.silahmod.kriss_vector",
 			"item.silahmod.helmet_1", "item.silahmod.vest_1", "item.silahmod.helmet_2", "item.silahmod.vest_2",
-			"item.silahmod.medkit", "item.silahmod.knife"
+			"item.silahmod.medkit", "item.silahmod.knife",
+			"item.silahmod.car_black_sedan", "item.silahmod.car_armored_skoda", "item.silahmod.car_lamborghini"
 	};
 	/** Menu yerlesimi: her sutun icin esya indeksleri. Sutun 0-1 = Silahlar, sutun 2 = Zirhlar ve medkit. */
 	private static final int[][] COLUMNS = {
 			{ 0, 1, 2, 3 },
 			{ 4, 5, 6, 7, 13 },
-			{ 8, 9, 10, 11, 12 }
+			{ 8, 9, 10, 11, 12 },
+			{ 14, 15, 16 }
 	};
 	private static final int ROWS = 5;           // en uzun sutunda 5 esya
 	private static final int BUTTON_W = 104;
@@ -87,6 +89,8 @@ public class WeaponMenuScreen extends Screen {
 				weaponsCenter, top() - 10, 0xFFAAAAAA);
 		graphics.drawCenteredString(this.font, Component.translatable("gui.silahmod.armors"),
 				columnX(2) + BUTTON_W / 2, top() - 10, 0xFFAAAAAA);
+		graphics.drawCenteredString(this.font, Component.translatable("gui.silahmod.cars"),
+				columnX(3) + BUTTON_W / 2, top() - 10, 0xFFAAAAAA);
 
 		// Her butonun soluna esya ikonu
 		int y = top();
