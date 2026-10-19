@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "silahmod",
+	"version": "${version}",
+	"name": "Silah Modu",
+	"description": "Tabanca ve tufekler, medkit ve zirhlar ekleyen silah modu.",
+	"authors": [
+		"Sen"
+	],
+	"contact": {},
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.silahmod.SilahMod"
+		],
+		"client": [
+			"com.silahmod.client.SilahModClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.0",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
