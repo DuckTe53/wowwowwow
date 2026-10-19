@@ -258,7 +258,7 @@ public class CarEntity extends Entity {
 		if (visual == null) {
 			visual = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
 			level.addFreshEntity(visual);
-			visual.startRiding(this, true);
+			visual.startRiding(this);
 			shownStage = -1;
 		}
 	}

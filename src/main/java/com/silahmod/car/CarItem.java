@@ -27,7 +27,8 @@ public class CarItem extends Item {
 
 		CarEntity car = new CarEntity(CarEntities.CAR, serverLevel);
 		car.setCarType(type);
-		car.moveTo(pos.x, pos.y, pos.z, yaw, 0.0F);
+		car.setPos(pos.x, pos.y, pos.z);
+		car.setYRot(yaw);
 		serverLevel.addFreshEntity(car);
 
 		if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
