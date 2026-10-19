@@ -18,7 +18,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.entity.EmptyEntityRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 
 public class SilahModClient implements ClientModInitializer {
 	public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(SilahMod.id("silahlar"));
@@ -81,7 +81,7 @@ public class SilahModClient implements ClientModInitializer {
 		// Mermi sayaci
 		HudElementRegistry.attachElementAfter(VanillaHudElements.INFO_BAR, SilahMod.id("ammo"), AmmoOverlay::renderAmmo);
 		// Araba: govde gorunmez (asil gorunum ustune binen ItemDisplay); renderer yalnizca kayit icin.
-		EntityRendererRegistry.register(CarEntities.CAR, ctx -> new EmptyEntityRenderer<>(ctx));
+		EntityRendererRegistry.register(CarEntities.CAR, ctx -> new NoopRenderer<>(ctx));
 		// Medkit bandaj sarma animasyonu (oyuncunun kendi skinindeki kol)
 		HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, SilahMod.id("medkit"), MedkitOverlay::render);
 	}
