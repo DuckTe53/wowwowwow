@@ -268,8 +268,7 @@ public final class Combat {
 		}
 		if (item == ModItems.MEDKIT) {
 			// Tuketilebilir: istenen adede tamamla (zaten yeterince varsa dokunma)
-			// Item'in maksimum stack boyutunu asma (asarsa envanter cokebilir).
-			int give = Math.min(WeaponConfig.MEDKIT_MENU_GIVE, new ItemStack(item).getMaxStackSize());
+			int give = WeaponConfig.MEDKIT_MENU_GIVE;
 			for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
 				ItemStack have = player.getInventory().getItem(i);
 				if (have.getItem() == item) {
