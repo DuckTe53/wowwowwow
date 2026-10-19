@@ -34,5 +34,6 @@
   "item.silahmod.car_armored_skoda": "Zırhlı Skoda",
   "item.silahmod.car_lamborghini": "Lamborghini",
   "message.silahmod.car_no_driver": "Bu arabayı sürmek için sağ tık yap",
-  "gui.silahmod.cars": "Araçlar"
+  "gui.silahmod.cars": "Araçlar",
+  "message.silahmod.car_controls": "W: ileri  S: geri/fren  A/D: yön   (çıkmak için Shift)"
 }

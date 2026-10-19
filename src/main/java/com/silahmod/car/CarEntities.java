@@ -18,7 +18,7 @@ public final class CarEntities {
 
 	public static final EntityType<CarEntity> CAR = Registry.register(BuiltInRegistries.ENTITY_TYPE, CAR_KEY,
 			EntityType.Builder.of(CarEntity::new, MobCategory.MISC)
-					.sized(2.0F, 1.3F)
+					.sized(2.4F, 1.5F)
 					.clientTrackingRange(10)
 					.updateInterval(2)
 					.build(CAR_KEY));

@@ -33,5 +33,6 @@
   "item.silahmod.car_black_sedan": "Black Sedan",
   "item.silahmod.car_armored_skoda": "Armored Skoda",
   "item.silahmod.car_lamborghini": "Lamborghini",
-  "gui.silahmod.cars": "Vehicles"
+  "gui.silahmod.cars": "Vehicles",
+  "message.silahmod.car_controls": "W: forward  S: brake/reverse  A/D: steer   (Shift to exit)"
 }

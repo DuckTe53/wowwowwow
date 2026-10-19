@@ -46,6 +46,9 @@ public class CarEntity extends Entity {
 	public static final int INPUT_LEFT = 4;
 	public static final int INPUT_RIGHT = 8;
 
+	/** Model olcegi (tools/gen_cars.py ile ayni). Model ~40 birim = 4.5 blok uzunluk. */
+	public static final float SCALE = 1.8F;
+
 	public static final float MAX_HP = 400.0F;
 	public static final float STAGE_DAMAGE = 150.0F;
 
@@ -274,9 +277,9 @@ public class CarEntity extends Entity {
 		}
 		// Model on (merkez) ustunde; yonu arabanin yonune dondur. Model on yonu +Z.
 		visual.setTransformation(new Transformation(
-				new Vector3f(0.0F, 0.5F, 0.0F),
+				new Vector3f(0.0F, 0.5F * SCALE, 0.0F),
 				new Quaternionf().rotateY((float) Math.toRadians(-getYRot())),
-				new Vector3f(1.0F, 1.0F, 1.0F),
+				new Vector3f(SCALE, SCALE, SCALE),
 				new Quaternionf()));
 	}
 
@@ -298,9 +301,20 @@ public class CarEntity extends Entity {
 			return InteractionResult.PASS;
 		}
 		if (!level().isClientSide()) {
-			player.startRiding(this);
+			if (player.startRiding(this)) {
+				player.displayClientMessage(Component.translatable("message.silahmod.car_controls"), true);
+			}
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/** Gorunum (ItemDisplay) bindirilmis oldugu icin varsayilan kontrol yetmez: oyuncuya bir sofor yeri ac. */
+	@Override
+	protected boolean canAddPassenger(Entity passenger) {
+		if (passenger instanceof Display.ItemDisplay) {
+			return true;
+		}
+		return passenger instanceof Player && driver() == null;
 	}
 
 	@Override
