@@ -21,7 +21,8 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.normpath(os.path.join(HERE, "..", "src", "main", "resources", "assets", "silahmod"))
-ATLAS = 64
+ATLAS = 128
+CELL = 8
 
 # Atlas bolgeleri (x0, y0, x1, y1). Birbirine girmez.
 REGIONS = {
@@ -220,33 +221,85 @@ CARS = {
 
 
 def assign_cells(parts):
-    """Her parcaya atlas'ta kendi 4x4 piksel hucresini ver (16x16 izgara, en fazla 256 parca)."""
+    """Her parcaya atlas'ta kendi 8x8 piksel hucresini ver (16x16 izgara, en fazla 256 parca)."""
     if len(parts) > 256:
         raise ValueError("Cok fazla parca: %d" % len(parts))
     for i, part in enumerate(parts):
         cx, cy = i % 16, i // 16
-        part["cell"] = [cx * 4, cy * 4, cx * 4 + 4, cy * 4 + 4]
+        part["cell"] = [cx * CELL, cy * CELL, cx * CELL + CELL, cy * CELL + CELL]
+
+
+def paint_detail(px, cell, role, base, stage, rng):
+    """Bir hucreyi parca tipine uygun detayla boyar (cam yansimasi, far, izgara, lastik, jant...)."""
+    x0, y0, x1, y1 = cell
+    n = CELL - 1
+    cx = cy = n / 2.0
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            u, v = x - x0, y - y0
+            t = v / n
+            if role == "body":
+                c = mul(base, 1.10 - 0.14 * t)
+                if u == 0 or v == 0 or u == n or v == n:
+                    c = mul(c, 0.72)                       # panel kenari
+                if v == 1:
+                    c = mul(c, 1.25)                       # gunes yansimasi
+            elif role == "roof":
+                c = mul(base, 1.12 - 0.1 * t)
+                if u == 0 or v == 0:
+                    c = mul(c, 0.8)
+            elif role == "glass":
+                c = mix((28, 42, 66), (120, 170, 220), t)
+                if (u + v) % 5 == 0:
+                    c = mix(c, (235, 242, 255), 0.55)      # cam yansimasi
+            elif role == "dark":
+                c = mul(base, 0.65 if (u + v) % 2 else 1.1)  # izgara agi
+            elif role == "trim":
+                c = mul(base, 0.75 + 0.45 * (1 - abs(u - cx) / cx))   # krom parlaklik seridi
+            elif role == "accent":
+                c = mul(base, 1.12 if v in (3, 4) else 0.95)  # serit
+            elif role == "light":
+                d = math.hypot(u - cx, v - cy) / cx
+                c = mix((255, 255, 240), base, min(1.0, d * 1.1))   # far parlakligi
+            elif role == "tire":
+                c = mul(base, 0.85 + 0.3 * rng.random())
+                if v % 3 == 0:
+                    c = mul(c, 0.6)                        # lastik dişli
+            elif role == "rim":
+                ang = math.atan2(v - cy, u - cx)
+                spoke = int((ang + math.pi) * 3 / math.pi) % 2
+                c = mul(base, 1.3 if spoke else 0.7)
+                if math.hypot(u - cx, v - cy) < 1.3:
+                    c = (58, 58, 64)                       # jant merkezi
+            elif role == "armor":
+                c = mul(base, 1.0)
+                if u % 4 == 1 and v % 4 == 1:
+                    c = mul(c, 1.35)                       # persin
+            else:
+                c = base
+            # hasar kademeleri
+            if stage >= 1 and role in ("body", "roof", "armor", "trim"):
+                c = mul(c, 0.9)
+            if stage >= 2:
+                if role in ("body", "roof", "armor"):
+                    c = mix(mul(c, 0.7), RUST, 0.3)
+                elif role in ("glass", "tire", "rim"):
+                    c = mul(c, 0.6)
+            px[x, y] = c + (255,)
+    if stage >= 2 and role == "glass" and rng.random() < 0.7:
+        # cam catlagi
+        for k in range(4):
+            px[x0 + min(n, k + 1), y0 + min(n, 2 * k % CELL)] = CRACK + (255,)
 
 
 def make_texture(car, parts, stage):
-    """Her parcanin hucresini role renginde boyar. Hasar kademesi renkleri koyulastirir/pas ekler."""
     img = Image.new("RGBA", (ATLAS, ATLAS), (0, 0, 0, 255))
     px = img.load()
     for part in parts:
         role = part["region"]
         base = hex_rgb(PALETTE[car][role])
-        color = base
-        if stage >= 1 and role in ("body", "roof", "armor", "trim"):
-            color = mul(base, 0.85)
-        if stage >= 2:
-            if role in ("body", "roof", "armor"):
-                color = mix(mul(base, 0.6), RUST, 0.35)
-            elif role in ("glass", "tire", "rim"):
-                color = mul(base, 0.6)
-        x0, y0, x1, y1 = part["cell"]
-        for y in range(y0, y1):
-            for x in range(x0, x1):
-                px[x, y] = color + (255,)
+        rng = random.Random(f"{car}-{stage}-{part['cell'][0]}-{part['cell'][1]}")
+        paint_detail(px, tuple(part["cell"]), role, base, stage, rng)
     return img
 
 
