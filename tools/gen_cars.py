@@ -39,19 +39,19 @@ REGIONS = {
 
 PALETTE = {
     "black_sedan": {
-        "body": "#15151a", "roof": "#101014", "glass": "#1b2636", "dark": "#0b0b0e",
-        "trim": "#b9bcc4", "accent": "#d4a72c", "tire": "#0c0c0c", "light": "#fff6d6",
-        "armor": "#1a1a20", "rim": "#9aa0aa",
+        "body": "#2e2e36", "roof": "#25252c", "glass": "#5f9fd8", "dark": "#18181c",
+        "trim": "#d7dbe3", "accent": "#e0b030", "tire": "#2a2a2e", "light": "#fff3a0",
+        "armor": "#3a3a42", "rim": "#dfe3ea",
     },
     "armored_skoda": {
-        "body": "#56634f", "roof": "#4a5645", "glass": "#262c33", "dark": "#1d2024",
-        "trim": "#7b8088", "accent": "#3a4048", "tire": "#111111", "light": "#dfe6ec",
-        "armor": "#6d7470", "rim": "#5d636b",
+        "body": "#66755e", "roof": "#596852", "glass": "#6b9fc9", "dark": "#2a2d31",
+        "trim": "#a7acb4", "accent": "#4a5058", "tire": "#2a2a2a", "light": "#fff8d0",
+        "armor": "#7d847e", "rim": "#b9bec6",
     },
     "lamborghini": {
-        "body": "#f0b400", "roof": "#e0a600", "glass": "#122030", "dark": "#101010",
-        "trim": "#c9ccd2", "accent": "#ff6a00", "tire": "#0a0a0a", "light": "#fffbe0",
-        "armor": "#1b1b1b", "rim": "#b8bcc4",
+        "body": "#f5b800", "roof": "#e6aa00", "glass": "#6aa4dc", "dark": "#2a2a2a",
+        "trim": "#d7dbe3", "accent": "#ff7a10", "tire": "#2a2a2a", "light": "#fffbd0",
+        "armor": "#2e2e2e", "rim": "#e2e6ec",
     },
 }
 
@@ -128,17 +128,17 @@ def B(parts, x0, x1, y0, y1, z0, z1, region, lost=None):
     })
 
 
-def wheels(p, inner, tire_w, h, length, zc, rim_w=0.3, lost_front_left=True):
+def wheels(p, inner, tire_w, h, length, zc, rim_w=0.45, lost_front_left=True):
     """4 teker. inner = govdeye yakin kenar (|x|), tire_w = lastik kalinligi, h = teker yuksekligi."""
     for s in (-1, 1):
         for z in (-zc, zc):
             lost = 2 if (lost_front_left and s < 0 and z > 0) else None
             if s < 0:
                 xa, xb = -inner - tire_w, -inner
-                rx0, rx1 = xa - rim_w, xa
+                rx0, rx1 = xa - rim_w * 2, xa
             else:
                 xa, xb = inner, inner + tire_w
-                rx0, rx1 = xb, xb + rim_w
+                rx0, rx1 = xb, xb + rim_w * 2
             B(p, xa, xb, 0, h, z - length / 2, z + length / 2, "tire", lost)
             B(p, rx0, rx1, h * 0.3, h * 0.7, z - length * 0.3, z + length * 0.3, "rim", lost)
 
@@ -147,10 +147,10 @@ def black_sedan():
     p = []
     B(p, -8, 8, 1.3, 4.8, -20, 20, "body")                        # alt govde
     B(p, -7, 7, 4.8, 9.5, -7, 6, "roof")                          # kabin
-    B(p, -6.6, 6.6, 4.8, 9.1, -7.25, -6.95, "glass")              # on cam
-    B(p, -6.6, 6.6, 4.8, 9.1, 5.95, 6.25, "glass")                # arka cam
-    B(p, -7.15, -6.85, 5.3, 8.9, -6, 5, "glass")                  # sol yan cam
-    B(p, 6.85, 7.15, 5.3, 8.9, -6, 5, "glass")                    # sag yan cam
+    B(p, -6.6, 6.6, 4.8, 9.1, -7.35, -6.9, "glass")              # on cam
+    B(p, -6.6, 6.6, 4.8, 9.1, 5.9, 6.35, "glass")                # arka cam
+    B(p, -7.25, -6.8, 5.3, 8.9, -6, 5, "glass")                  # sol yan cam
+    B(p, 6.8, 7.25, 5.3, 8.9, -6, 5, "glass")                    # sag yan cam
     B(p, -5, 5, 2.0, 4.0, 19.9, 20.3, "dark")                     # izgara
     B(p, -7.5, -3.8, 3.6, 4.6, 19.6, 20.2, "light")               # farlar
     B(p, 3.8, 7.5, 3.6, 4.6, 19.6, 20.2, "light")
