@@ -219,8 +219,39 @@ CARS = {
 }
 
 
+def assign_cells(parts):
+    """Her parcaya atlas'ta kendi 4x4 piksel hucresini ver (16x16 izgara, en fazla 256 parca)."""
+    if len(parts) > 256:
+        raise ValueError("Cok fazla parca: %d" % len(parts))
+    for i, part in enumerate(parts):
+        cx, cy = i % 16, i // 16
+        part["cell"] = [cx * 4, cy * 4, cx * 4 + 4, cy * 4 + 4]
+
+
+def make_texture(car, parts, stage):
+    """Her parcanin hucresini role renginde boyar. Hasar kademesi renkleri koyulastirir/pas ekler."""
+    img = Image.new("RGBA", (ATLAS, ATLAS), (0, 0, 0, 255))
+    px = img.load()
+    for part in parts:
+        role = part["region"]
+        base = hex_rgb(PALETTE[car][role])
+        color = base
+        if stage >= 1 and role in ("body", "roof", "armor", "trim"):
+            color = mul(base, 0.85)
+        if stage >= 2:
+            if role in ("body", "roof", "armor"):
+                color = mix(mul(base, 0.6), RUST, 0.35)
+            elif role in ("glass", "tire", "rim"):
+                color = mul(base, 0.6)
+        x0, y0, x1, y1 = part["cell"]
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = color + (255,)
+    return img
+
+
 def element(part):
-    uv = list(patch(part["region"]))
+    uv = list(part["cell"])
     faces = {f: {"uv": uv, "texture": "#0"} for f in ("north", "south", "east", "west", "up", "down")}
     return {"from": part["from"], "to": part["to"], "faces": faces}
 
@@ -262,9 +293,9 @@ def write_json(path, data):
 def main():
     for car, builder in CARS.items():
         parts = builder()
+        assign_cells(parts)
         for stage in range(3):
-            rng = random.Random(f"{car}-{stage}")
-            tex = make_texture(car, stage, rng)
+            tex = make_texture(car, parts, stage)
             tex_path = os.path.join(ASSETS, "textures", "item", f"car_{car}_{stage}.png")
             os.makedirs(os.path.dirname(tex_path), exist_ok=True)
             tex.save(tex_path)
