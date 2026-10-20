@@ -55,6 +55,13 @@ PALETTE = {
     },
 }
 
+def patch(name):
+    """Bolgenin ortasinda 4x4 tek renkli yama. Yuzler bunu kullanir -> mozaik/serit olmaz."""
+    x0, y0, x1, y1 = REGIONS[name]
+    cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
+    return (cx - 2, cy - 2, cx + 2, cy + 2)
+
+
 RUST = (122, 72, 36)
 SOOT = (20, 18, 16)
 CRACK = (228, 232, 236)
@@ -81,124 +88,31 @@ def mix(a, b, t):
 
 def paint_region(px, name, base, rng):
     x0, y0, x1, y1 = REGIONS[name]
-    w, h = x1 - x0, y1 - y0
-    cx, cy = w / 2.0, h / 2.0
-    for y in range(h):
-        for x in range(w):
-            u, v = x, y
-            t = v / max(1, h - 1)
-            if name == "body":
-                c = mul(base, 1.12 - 0.22 * t)                      # ust daha acik
-                if v % 8 == 0:
-                    c = mul(c, 0.7)                                 # panel birlestirme cizgisi
-                if 3 <= v <= 4:
-                    c = mul(c, 1.25)                                # gunes yansimasi
-                c = mul(c, 1 + rng.uniform(-0.02, 0.02))
-            elif name == "roof":
-                c = mul(base, 1.08 - 0.12 * t)
-            elif name == "glass":
-                c = mix((40, 60, 85), mul(base, 1.4), t)
-                if (u + v) % 11 < 2:
-                    c = mix(c, (200, 215, 235), 0.45)               # cam yansimasi
-            elif name == "dark":
-                c = mul(base, 0.75 if ((u // 2) + (v // 2)) % 2 else 1.1)   # izgara
-            elif name == "trim":
-                c = mul(base, 0.85 + 0.35 * math.sin(math.pi * t))
-                if 2 <= u <= 3:
-                    c = mul(c, 1.2)
-            elif name == "accent":
-                c = mul(base, 1.1 if abs(v - cy) < 1.5 else 0.95)
-            elif name == "tire":
-                c = mul(base, 1 + rng.uniform(-0.12, 0.12))
-            elif name == "light":
-                d = math.hypot(u - cx, v - cy) / (w / 2.0)
-                c = mix((255, 255, 240), base, min(1.0, d))
-            elif name == "armor":
-                c = mul(base, 1 + rng.uniform(-0.05, 0.05))
-                if u % 6 == 1 and v % 6 == 1:
-                    c = mul(c, 1.35)                                # perçin
-            elif name == "rim":
-                ang = math.atan2(v - cy, u - cx)
-                spoke = int((ang + math.pi) * 5 / math.pi) % 2
-                c = mul(base, 1.25 if spoke else 0.75)
-                if math.hypot(u - cx, v - cy) < 2.2:
-                    c = (60, 60, 64)                                # jant merkezi
-            else:
-                c = base
-            px[x0 + x, y0 + y] = c + (255,)
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            px[x, y] = base + (255,)
 
 
 def make_texture(car, stage, rng):
     img = Image.new("RGBA", (ATLAS, ATLAS), (0, 0, 0, 255))
     px = img.load()
     for name in REGIONS:
-        paint_region(px, name, hex_rgb(PALETTE[car][name]), rng)
-
-    def region_pixels(name):
-        x0, y0, x1, y1 = REGIONS[name]
-        return [(x, y) for y in range(y0, y1) for x in range(x0, x1)]
-
-    def shade(name, f):
-        for (x, y) in region_pixels(name):
-            r, g, b, a = px[x, y]
-            px[x, y] = (clamp(r * f), clamp(g * f), clamp(b * f), a)
-
-    def blobs(name, color, count, rmin, rmax):
-        x0, y0, x1, y1 = REGIONS[name]
-        for _ in range(count):
-            cx, cy = rng.uniform(x0, x1 - 1), rng.uniform(y0, y1 - 1)
-            r = rng.uniform(rmin, rmax)
-            for (x, y) in region_pixels(name):
-                if (x - cx) ** 2 + (y - cy) ** 2 <= r * r:
-                    px[x, y] = color + (255,)
-
-    def scratches(name, count):
-        x0, y0, x1, y1 = REGIONS[name]
-        for _ in range(count):
-            x, y = rng.uniform(x0, x1 - 1), rng.uniform(y0, y1 - 1)
-            dx, dy = rng.choice([(1, 0), (0, 1), (1, 1), (1, -1)])
-            for _ in range(rng.randint(4, 9)):
-                xi, yi = int(x), int(y)
-                if x0 <= xi < x1 and y0 <= yi < y1:
-                    r, g, b, a = px[xi, yi]
-                    px[xi, yi] = (clamp(r + 55), clamp(g + 55), clamp(b + 55), a)
-                x, y = x + dx, y + dy
-
-    def cracks(name, count, length):
-        x0, y0, x1, y1 = REGIONS[name]
-        for _ in range(count):
-            x, y = rng.uniform(x0, x1 - 1), rng.uniform(y0, y1 - 1)
-            ang = rng.uniform(0, math.tau)
-            for _ in range(length):
-                xi, yi = int(x), int(y)
-                if x0 <= xi < x1 and y0 <= yi < y1:
-                    px[xi, yi] = CRACK + (255,)
-                ang += rng.uniform(-0.6, 0.6)
-                x, y = x + math.cos(ang), y + math.sin(ang)
-
-    def soot(name, prob):
-        for (x, y) in region_pixels(name):
-            if rng.random() < prob:
-                r, g, b, a = px[x, y]
-                px[x, y] = (clamp((r + SOOT[0]) / 2), clamp((g + SOOT[1]) / 2), clamp((b + SOOT[2]) / 2), a)
-
-    painted = ("body", "roof", "armor", "trim")
-    if stage >= 1:
-        for n in painted:
-            shade(n, 0.93)
-        blobs("body", (32, 32, 36), 5, 1.2, 2.4)           # cokuntuler
-        scratches("body", 8)
-        cracks("glass", 1, 8)
-    if stage >= 2:
-        for n in painted:
-            shade(n, 0.6)
-        soot("body", 0.28)
-        soot("roof", 0.3)
-        blobs("body", RUST, 6, 1.2, 3.0)                    # pas
-        blobs("armor", RUST, 3, 1.0, 2.2)
-        cracks("glass", 5, 12)
-        shade("tire", 0.6)
-        shade("rim", 0.7)
+        base = hex_rgb(PALETTE[car][name])
+        paint_region(px, name, base, rng)
+        x0, y0, x1, y1 = patch(name)
+        color = base
+        if stage >= 1 and name in ("body", "roof", "armor", "trim"):
+            color = mul(base, 0.85)
+        if stage >= 2:
+            if name in ("body", "roof", "armor"):
+                color = mix(mul(base, 0.6), RUST, 0.35)
+            elif name == "glass":
+                color = mul(base, 0.6)
+            elif name in ("tire", "rim"):
+                color = mul(base, 0.6)
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = color + (255,)
     return img
 
 
@@ -306,7 +220,7 @@ CARS = {
 
 
 def element(part):
-    uv = list(REGIONS[part["region"]])
+    uv = list(patch(part["region"]))
     faces = {f: {"uv": uv, "texture": "#0"} for f in ("north", "south", "east", "west", "up", "down")}
     return {"from": part["from"], "to": part["to"], "faces": faces}
 
