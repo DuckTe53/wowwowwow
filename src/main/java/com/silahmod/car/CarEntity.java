@@ -252,16 +252,14 @@ public class CarEntity extends Entity {
 		if (visual != null && !visual.isRemoved()) {
 			return;
 		}
+		// Ayni arabanin eski gorunumu varsa (kayittan yuklenmis) onu kullan; yoksa yenisini olustur.
 		visual = null;
-		for (Entity passenger : getPassengers()) {
-			if (passenger instanceof Display.ItemDisplay display && visual == null) {
-				visual = display;
-			}
-		}
-		if (visual == null) {
+		List<Display.ItemDisplay> near = level.getEntitiesOfClass(Display.ItemDisplay.class, getBoundingBox().inflate(0.5));
+		if (!near.isEmpty()) {
+			visual = near.get(0);
+		} else {
 			visual = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
 			level.addFreshEntity(visual);
-			visual.startRiding(this);
 			shownStage = -1;
 		}
 	}
@@ -270,6 +268,8 @@ public class CarEntity extends Entity {
 		if (visual == null) {
 			return;
 		}
+		// Gorunum arabanin tam konumunda (binmis yolcu ofseti olmadan): alt kenar zemine oturur.
+		visual.setPos(getX(), getY(), getZ());
 		int stage = stage();
 		if (stage != shownStage) {
 			shownStage = stage;
