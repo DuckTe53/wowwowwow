@@ -310,7 +310,11 @@ def make_texture(car, parts, stage):
 
 
 def element(part):
-    uv = list(part["cell"])
+    # UV'ler Minecraft'in standart 0-16 uzayinda yazilir (texture_size kullanilmaz).
+    # Boylece oyun dokuyu her durumda dogru eslestirir; atlas disindan baska ikon okumaz.
+    x0, y0, x1, y1 = part["cell"]
+    k = 16.0 / ATLAS
+    uv = [round(x0 * k, 4), round(y0 * k, 4), round(x1 * k, 4), round(y1 * k, 4)]
     faces = {f: {"uv": uv, "texture": "#0"} for f in ("north", "south", "east", "west", "up", "down")}
     return {"from": part["from"], "to": part["to"], "faces": faces}
 
@@ -320,7 +324,6 @@ def model_json(car, stage, parts):
     kept = [part for part in parts if part["lost_at"] is None or stage < part["lost_at"]]
     return {
         "textures": {"0": tex, "particle": tex},
-        "texture_size": [ATLAS, ATLAS],
         "elements": [element(part) for part in kept],
     }
 
