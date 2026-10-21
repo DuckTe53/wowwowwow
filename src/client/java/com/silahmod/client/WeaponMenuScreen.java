@@ -35,11 +35,11 @@ public class WeaponMenuScreen extends Screen {
 			{ 14, 15, 16 }
 	};
 	private static final int ROWS = 5;           // en uzun sutunda 5 esya
-	private static final int BUTTON_W = 104;
-	private static final int BUTTON_H = 22;
-	private static final int GAP = 5;
-	private static final int ICON_SPACE = 22;    // butonun solundaki ikon alani
-	private static final int COLUMN_GAP = 10;
+	private static final int BUTTON_W = 84;
+	private static final int BUTTON_H = 18;
+	private static final int GAP = 3;
+	private static final int ICON_SPACE = 16;    // butonun solundaki ikon alani
+	private static final int COLUMN_GAP = 6;
 
 	public WeaponMenuScreen() {
 		super(Component.translatable("screen.silahmod.menu"));

@@ -49,6 +49,11 @@ public class CarEntity extends Entity {
 	/** Model olcegi (tools/gen_cars.py ile ayni). Model ~40 birim = 4.5 blok uzunluk. */
 	public static final float SCALE = 1.8F;
 
+	/** Gorunumu zeminin biraz ustunde tut (surtunme/titreme olmasin). */
+	private static final double VISUAL_LIFT = 0.05;
+	/** Bir blok yuksekligindeki basamaklari (merdiven) asabilsin. */
+	private static final float STEP_HEIGHT = 1.05F;
+
 	public static final float MAX_HP = 400.0F;
 	public static final float STAGE_DAMAGE = 150.0F;
 
@@ -269,7 +274,8 @@ public class CarEntity extends Entity {
 			return;
 		}
 		// Gorunum arabanin tam konumunda (binmis yolcu ofseti olmadan): alt kenar zemine oturur.
-		visual.setPos(getX(), getY(), getZ());
+		// Zemine tam oturunca z-fighting/surtunme olmasin diye 0.05 blok yukari.
+		visual.setPos(getX(), getY() + VISUAL_LIFT, getZ());
 		int stage = stage();
 		if (stage != shownStage) {
 			shownStage = stage;
@@ -306,6 +312,12 @@ public class CarEntity extends Entity {
 			}
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/** Merdiven ve tek bloklu basamaklari cikabilsin. */
+	@Override
+	public float maxUpStep() {
+		return STEP_HEIGHT;
 	}
 
 	/** Gorunum (ItemDisplay) bindirilmis oldugu icin varsayilan kontrol yetmez: oyuncuya bir sofor yeri ac. */
