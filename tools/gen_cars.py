@@ -145,16 +145,22 @@ def wheels(p, inner, tire_w, h, length, zc, rim_w=0.45, lost_front_left=True):
 
 
 def black_sedan():
+    """Gercek sedan profili: alcak kaput, egimli on cam, kabin, bagaj."""
     p = []
-    B(p, -8, 8, 1.3, 4.8, -20, 20, "body")                        # alt govde
-    B(p, -7, 7, 4.8, 9.5, -7, 6, "roof")                          # kabin
-    B(p, -6.6, 6.6, 4.8, 9.1, -7.35, -6.9, "glass")              # on cam
-    B(p, -6.6, 6.6, 4.8, 9.1, 5.9, 6.35, "glass")                # arka cam
-    B(p, -7.25, -6.8, 5.3, 8.9, -6, 5, "glass")                  # sol yan cam
-    B(p, 6.8, 7.25, 5.3, 8.9, -6, 5, "glass")                    # sag yan cam
+    B(p, -8, 8, 1.3, 4.8, -20, 6, "body")                        # bagaj + orta govde
+    B(p, -8, 8, 1.3, 4.2, 6, 20, "body")                          # alcak kaput
+    B(p, -7, 7, 4.8, 9.5, -4, 4.5, "roof")                        # kabin tavani
+    B(p, -7, 7, 4.8, 7.6, -8, -4, "roof")                         # on cam egimi (alt)
+    B(p, -7, 7, 4.8, 6.2, -10, -8, "roof")                        # on cam egimi (alt-on)
+    B(p, -6.6, 6.6, 6.2, 9.1, -8.4, -7.6, "glass")                # on cam (egimli yuzey)
+    B(p, -6.6, 6.6, 7.6, 9.1, -4.2, -3.6, "glass")                # on cam ust kisim
+    B(p, -6.6, 6.6, 4.8, 9.1, 4.4, 5.6, "glass")                  # arka cam
+    B(p, -7, 7, 4.8, 7.4, 4.5, 7, "roof")                         # arka cam egimi
+    B(p, -7.25, -6.8, 5.3, 8.9, -6, 4, "glass")                   # sol yan cam
+    B(p, 6.8, 7.25, 5.3, 8.9, -6, 4, "glass")                     # sag yan cam
     B(p, -5, 5, 2.0, 4.0, 19.9, 20.3, "dark")                     # izgara
-    B(p, -7.5, -3.8, 3.6, 4.6, 19.6, 20.2, "light")               # farlar
-    B(p, 3.8, 7.5, 3.6, 4.6, 19.6, 20.2, "light")
+    B(p, -7.5, -3.8, 3.2, 4.2, 19.6, 20.2, "light")               # farlar
+    B(p, 3.8, 7.5, 3.2, 4.2, 19.6, 20.2, "light")
     B(p, -7.5, -4, 3.2, 4.4, -20.2, -19.6, "accent")              # stop lambalari
     B(p, 4, 7.5, 3.2, 4.4, -20.2, -19.6, "accent")
     B(p, -8.2, 8.2, 1.3, 2.6, 20, 20.7, "trim", lost=2)           # on tampon
