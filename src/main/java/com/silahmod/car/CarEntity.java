@@ -50,7 +50,7 @@ public class CarEntity extends Entity {
 	public static final float SCALE = 1.8F;
 
 	/** Gorunumu zeminin biraz ustunde tut (surtunme/titreme olmasin). */
-	private static final double VISUAL_LIFT = 0.15;
+	private static final double VISUAL_LIFT = 0.25;
 	/** Bir blok yuksekligindeki basamaklari (merdiven) asabilsin. */
 	private static final float STEP_HEIGHT = 1.05F;
 
@@ -81,6 +81,9 @@ public class CarEntity extends Entity {
 	private double speed;
 	private int input;
 	private int shownStage = -1;
+	/** Arabada son surucu ve binmeden once gorunmez olup olmadigi (inince geri yuklemek icin). */
+	private Player lastDriver;
+	private boolean lastDriverWasInvisible;
 	private Display.ItemDisplay visual;
 
 	public CarEntity(EntityType<? extends CarEntity> type, Level level) {
@@ -182,6 +185,7 @@ public class CarEntity extends Entity {
 		if (!(level() instanceof ServerLevel level) || isRemoved()) {
 			return;
 		}
+		updateDriverVisibility();
 		ensureVisual(level);
 		drive(level);
 		if (isRemoved()) {
@@ -238,6 +242,23 @@ public class CarEntity extends Entity {
 		if (horizontalCollision && impact > CRASH_MIN_SPEED) {
 			speed = 0.0;
 			applyDamage(level, (float) ((impact - CRASH_MIN_SPEED) * CRASH_DAMAGE_PER_SPEED));
+		}
+	}
+
+	/** Binen oyuncu gorunmez olur; inince (ya da arac silinince) eski durumu geri yuklenir. */
+	private void updateDriverVisibility() {
+		Player current = driver();
+		if (current != lastDriver) {
+			if (lastDriver != null) {
+				lastDriver.setInvisible(lastDriverWasInvisible);
+			}
+			if (current != null) {
+				lastDriverWasInvisible = current.isInvisible();
+			}
+			lastDriver = current;
+		}
+		if (current != null) {
+			current.setInvisible(true);
 		}
 	}
 
@@ -331,6 +352,10 @@ public class CarEntity extends Entity {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
+		if (lastDriver != null) {
+			lastDriver.setInvisible(lastDriverWasInvisible);
+			lastDriver = null;
+		}
 		if (visual != null) {
 			visual.discard();
 			visual = null;
