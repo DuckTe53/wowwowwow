@@ -50,7 +50,7 @@ public class CarEntity extends Entity {
 	public static final float SCALE = 1.8F;
 
 	/** Gorunumu zeminin biraz ustunde tut (surtunme/titreme olmasin). */
-	private static final double VISUAL_LIFT = 0.05;
+	private static final double VISUAL_LIFT = 0.15;
 	/** Bir blok yuksekligindeki basamaklari (merdiven) asabilsin. */
 	private static final float STEP_HEIGHT = 1.05F;
 
