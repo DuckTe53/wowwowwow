@@ -20,7 +20,7 @@ public final class CarEntities {
 			EntityType.Builder.of(CarEntity::new, MobCategory.MISC)
 					.sized(2.4F, 1.5F)
 					.clientTrackingRange(10)
-					.updateInterval(2)
+					.updateInterval(1)
 					.build(CAR_KEY));
 
 	/** Siniflarin yuklenmesini tetikler (kayit statik alanda yapilir). */
